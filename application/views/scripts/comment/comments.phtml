@@ -1,0 +1,92 @@
+<?php 
+    if(!$this->post && $this->postId){
+        $this->post = PostModel::selectById($this->postId);
+//        $this->post->populateWpGlobals();
+    }
+    if(!$this->post){
+        $this->post = new PostModel();
+    }
+//        $this->post->populateWpGlobals();
+?>
+<div class="bem-comment_list" style="display: none;">
+    <?php if ( post_password_required() ) : ?>
+    <p class="nopassword"><?php _e( 'This post is password protected. Enter the password to view any comments.', wpp_BRX_Comments::NLS_DOMAIN ); ?></p>
+    <?php elseif ( false && ! comments_open() && post_type_supports( get_post_type(), 'comments' ) ) :?>
+            <p class="nocomments"><?php _e( 'Comments are closed.', wpp_BRX_Comments::NLS_DOMAIN ); ?></p>
+    <?php else:?>
+    <?php 
+        $this->post->setComments(array());
+        $isTemplate = !$this->post->getId(); 
+        if(!$isTemplate):
+            ?>
+    <?php $this->post->loadComments(); $this->post->populateWpGlobals();?>
+    <script>
+        (function($){
+            $.comments = $.comments || {};
+            $.comments[<?php echo $this->post->getId()?>] = <?php echo JsonHelper::encode($this->post->getComments())?>;
+        })(this);
+    </script>
+    <?php endif; ?>
+    <?php $this->title = $this->title?$this->title:'Комментарии:';?>
+    <h3><?php echo $this->title;?></h3>
+    <div widget<?php if ($isTemplate):?>Template<?php endif;?>="brx.comments" id="comments-<?php the_ID(); echo $isTemplate?'template':''?>">
+
+        <div class="comment_list" attachPoint="commentsBox">
+            <?php
+            /* Loop through and list the comments. Tell wp_list_comments()
+             * to use twentyeleven_comment() to format the comments.
+             * If you want to overload this in a child theme then you can
+             * define twentyeleven_comment() and that will be used instead.
+             * See twentyeleven_comment() in twentyeleven/functions.php for more.
+             */
+            $templateComment = new CommentModel();
+            echo $this->partial('comment/comment.phtml', array('comment'=>$templateComment));
+            foreach($this->post->getComments() as $comment){
+                echo $this->partial('comment/comment.phtml', array('comment'=>$comment));
+            }
+            ?>
+        </div>
+        <?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : // are there comments to navigate through ?>
+        <nav id="comment-nav-below">
+                <h1 class="assistive-text"><?php _e( 'Comment navigation', AnotherGuru::NLS_DOMAIN ); ?></h1>
+                <div class="nav-previous"><?php previous_comments_link( __( '&larr; Older Comments', AnotherGuru::NLS_DOMAIN ) ); ?></div>
+                <div class="nav-next"><?php next_comments_link( __( 'Newer Comments &rarr;', AnotherGuru::NLS_DOMAIN ) ); ?></div>
+        </nav>
+        <?php endif; // check for comment navigation ?>
+
+        <?php //PostroyDom::renderCommentForm(); ?>
+        <form class="form_add_comment" id="addCommentForm_<?php echo $this->post->getId();?>" method="post" action="/api/comment/publish">
+            <input type="hidden" id="comment_post_ID" value="<?php the_ID;?>" name="comment_post_ID">
+            <input type="hidden" value="0" id="comment_parent" name="comment_parent">
+            <div attachPoint="fields.comment" class="form_field">
+                <div class="form_field-input_box">
+                    <textarea rows="8" cols="45" name="comment" attachPoint="inputs.comment" class="text ui-widget-content ui-corner-all" style=""></textarea>
+                </div>
+                <div class="form_field-tips"></div>
+            </div>
+            <div class="form_box-buttons">
+                <button attachPoint="buttons.publish" attachEvent="buttonPublishClicked" widget="button" class="btn btn_publish" >Написать</button>
+            </div>
+            <div attachPoint="messageBox" class="clearfloat"></div>
+            <div class="clearfloat"></div>
+        </form>
+        <form class="form_edit_comment" attachPoint="editorBox" id="updateCommentForm_<?php echo $this->post->getId();?>" method="post" action="/api/comment/update" style="display: none; ">
+            <input  attachPoint="inputs.commentId" type="hidden" id="comment_ID" value="" name="comment_ID">
+            <input type="hidden" value="0" id="comment_parent" name="comment_parent">
+            <div attachPoint="fields.content" class="form_field" >
+                <div class="form_field-input_box">
+                    <textarea rows="2" cols="45" name="comment" attachPoint="inputs.content" class="text ui-widget-content ui-corner-all" style=""></textarea>
+                </div>
+                <div class="form_field-tips"></div>
+            </div>
+            <div class="form_box-buttons">
+                <button attachPoint="buttons.update" attachEvent="buttonUpdateClicked" widget="button" class="btn btn_save" style=""><!--span class="ui-icon ui-icon-disk"></span-->Обновить</button>
+                <button attachPoint="buttons.cancel" attachEvent="hideEditorBox" widget="button" class="btn btn_cancel" ><!--span class="ui-icon ui-icon-cancel"></span-->Отмена</button>
+            </div>
+            <div class="clearfloat"></div>
+        </form>
+    </div>
+    <?php endif; ?>
+
+</div>
+

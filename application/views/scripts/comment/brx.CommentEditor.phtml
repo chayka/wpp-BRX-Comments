@@ -1,0 +1,53 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+?>
+<form class="brx-comment_editor <?php echo UserModel::currentUser()->getId()?'user_authorized':'non_authorized'?>" backbone-view="brx.CommentEditor" postId="<?php echo $this->post->getId();?>" attachView="commentEditor">
+    <input type="hidden" attachPoint="inputs.post_id" value="<?php echo $this->post->getId();?>" name="comment_post_ID">
+    <input type="hidden" attachPoint="inputs.parent_id" value="0" id="comment_parent" name="comment_parent">
+    <div class="non_authorized_block" attachPoint="nonAuthorizedBlock" <?php HtmlHelper::hidden(AclHelper::isAuthorized());?>>
+        <div attachPoint="fields.comment_author" class="form_field field_name" check-required="Необходимо заполнить">
+            <label>Ваше имя</label>
+            <div class="form_field-input_box">
+                <input type="text" name="name" />
+            </div>
+            <div class="form_field-tips"></div>
+        </div>
+        <div attachPoint="fields.comment_author_email" class="form_field field_email" check-required="Необходимо заполнить" check-email="Например (guest@<?php echo Util::serverName();?>)">
+            <label>Ваш email</label>
+            <div class="form_field-input_box">
+                <input type="text" name="email" />
+            </div>
+            <div class="form_field-tips"></div>
+        </div>
+        <div attachPoint="fields.comment_author_url" class="form_field field_url">
+            <label>Ваш сайт</label>
+            <div class="form_field-input_box">
+                <input type="text" name="url" />
+            </div>
+            <div class="form_field-tips"></div>
+        </div>
+    </div>
+    <div class="user_authorized_block" attachPoint="userAuthorizedBlock" <?php HtmlHelper::hidden(!AclHelper::isAuthorized());?>>
+        <?php echo get_avatar(UserModel::currentUser()->getEmail(), 96);?>
+    </div>
+    <div attachPoint="fields.comment_content" class="form_field field_comment" check-required="Необходимо заполнить" >
+        <label>Ваш комментарий</label>
+        <div class="form_field-input_box">
+            <textarea name="comment" class="" style="" rows="1"></textarea>
+        </div>
+        <div class="form_field-tips"></div>
+    </div>
+    <div class="form_box-buttons">
+        <div class="required_fields_note"><span class="required_field_asterisk">*</span> Поля, обязательные для заполнения</div>
+        <!--<div class="refresh_comments" attachEvent="refreshComments">Обновить ленту комментариев</div>-->
+        <button attachPoint="buttons.save" attachEvent="buttonSaveClicked" class="btn_publish" >Отправить</button>
+        <button attachPoint="buttons.cancel" attachEvent="buttonCancelClicked" class="btn_cancel">Отмена</button>
+    </div>
+    <div attachPoint="messageBox" class="clearfloat"></div>
+    <div class="clearfloat"></div>
+</form>
+

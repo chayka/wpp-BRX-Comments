@@ -1,0 +1,26 @@
+<?php
+//Util::print_r($this->comment);
+//$comment = $this->comment->getWpComment();
+$isTemplate = !$this->comment->getId();
+switch ($this->comment->getType()) :
+    case 'pingback' :
+    case 'trackback' :
+        break;
+    default :
+        ?>
+        <div class="bem_comment_item" <?php HtmlHelper::hidden($isTemplate);?> id="comment-<?php echo $isTemplate?'template':$this->comment->getId()?>" >
+            <?php echo $this->partial('comment/user.phtml', array(
+                'user'=>  UserModel::selectById($this->comment->getUserId()), 
+                'avatarSize'=>16
+                ));?>
+            <div class="comment_tools">
+                <span class="ui-icon ui-icon-pencil"></span>
+                <span class="ui-icon ui-icon-trash"></span>
+            </div>
+            <div class="content"><?php echo nl2br($this->comment->getContent()); ?></div>
+            <div class="clearfloat"></div>
+        </div>
+        <?php
+        break;
+endswitch;
+

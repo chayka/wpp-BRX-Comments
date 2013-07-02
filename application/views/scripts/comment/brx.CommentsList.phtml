@@ -1,0 +1,75 @@
+<?php 
+    if(!$this->post && $this->postId){
+        $this->post = PostModel::selectById($this->postId);
+//        $this->post->populateWpGlobals();
+    }
+    if(!$this->post){
+        $this->post = new PostModel();
+    }
+//        $this->post->populateWpGlobals();
+?>
+<div class="brx-comments" style="display: none;">
+    <?php if ( post_password_required() ) : ?>
+    <p class="nopassword"><?php _e( 'This post is password protected. Enter the password to view any comments.', wpp_BRX_Comments::NLS_DOMAIN ); ?></p>
+    <?php elseif ( false && ! comments_open() && post_type_supports( get_post_type(), 'comments' ) ) :?>
+    <p class="nocomments"><?php _e( 'Comments are closed.', wpp_BRX_Comments::NLS_DOMAIN ); ?></p>
+    <?php else:?>
+    <?php 
+        $this->post->setComments(array());
+        $isTemplate = !$this->post->getId(); 
+        if(!$isTemplate):
+            ?>
+    <?php 
+        $this->post->loadComments(array('order'=>'asc')); 
+        $this->post->populateWpGlobals();
+        $total = count($this->post->getComments());
+        $direct = $this->order == 'asc';
+    ?>
+    <?php BackboneHelper::populateComments($this->post->getComments(), 'wp.comments.'.$this->post->getId());?>
+    <?php add_action('wp_footer', array('BackboneHelper', 'populateUsers'), 90);?>
+    <?php endif; ?>
+    <?php $this->title = $this->title?$this->title:'Комментарии';?>
+    <div backbone-view<?php if ($isTemplate):?>Template<?php endif;?>="brx.CommentsList" id="comments-<?php the_ID(); echo $isTemplate?'template':''?>" comments-var="$.wp.comments.<?php the_ID();?>" postId="<?php the_ID();?>" order="<?php echo $this->order;?>" perPage="<?php echo $this->perPage;?>">
+        <h3><span class="comments_title"><?php echo $this->title;?> (<span attachPoint="views.total"><?php echo $total ?></span>)</span></h3>
+        <script id="comment-view-template" type="text/template">
+        <?php            
+            $templateComment = new CommentModel();
+            echo $this->partial('comment/brx.CommentView.phtml', array('comment'=>$templateComment, 'fieldsOrder'=>$this->fieldsOrder));
+        ?>
+        </script>
+        <?php if($direct):?>
+        <div class="show_hidden_pane" attachPoint="showHiddenBox" <?php HtmlHelper::hidden($total<=$this->perPage);?>><span class="link" attachEvent="showMoreComments">Просмотреть более ранние комментарии...</span><span attachPoint="views.shown" class="shown_total"><?php printf('Показано %d из %d', $this->perPage, count($this->post->getComments()));?></span></div>
+        <?php else:?>
+        <?php echo $this->partial('comment/brx.CommentEditor.phtml', array('post'=>$this->post));?>
+        <div class="button_pane" attachPoint="buttonsBox" <?php HtmlHelper::hidden();?>>
+            <button class="btn_add_comment" attachPoint="buttons.addComment" attachEvent="showBottomEditor" >Добавить свой комментарий</button>
+        </div>
+        <?php endif;?>
+        <div class="comment_list" attachPoint="commentsBox">
+            <?php
+//            foreach($this->post->getComments() as $comment){
+//            }
+            $comments = array_slice($this->post->getComments(), -$this->perPage);
+//                Util::print_r($comments);
+            $comment = $direct? reset($comments): end($comments);
+            $i = 0;
+            do{
+                if($comment){
+                    echo $this->partial('comment/brx.CommentView.phtml', array('comment'=>$comment, 'fieldsOrder'=>$this->fieldsOrder));
+                }
+            }while($comment = $direct?next($comments):  prev($comments));
+            ?>
+        </div>
+        <?php if(!$direct):?>
+        <div class="show_hidden_pane" attachPoint="showHiddenBox" <?php HtmlHelper::hidden($total<=$this->perPage);?>><span class="link" attachEvent="showMoreComments">Просмотреть более ранние комментарии...</span><span attachPoint="views.shown" class="shown_total"><?php printf('Показано %d из %d', $this->perPage, count($this->post->getComments()));?></span></div>
+        <?php else:?>
+        <?php echo $this->partial('comment/brx.CommentEditor.phtml', array('post'=>$this->post));?>
+        <div class="button_pane" attachPoint="buttonsBox" <?php HtmlHelper::hidden();?>>
+            <button class="btn_add_comment" attachPoint="buttons.addComment" attachEvent="showBottomEditor" >Добавить свой комментарий</button>
+        </div>
+        <?php endif;?>
+
+    </div>
+    <?php endif; ?>
+
+</div>

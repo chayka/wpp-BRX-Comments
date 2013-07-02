@@ -1,0 +1,87 @@
+.comment-form-author input,
+.comment-form-email input,
+.comment-form-url input,
+.comment-form-comment textarea
+{
+    border: 1px solid darkslategray;
+    display: block;
+}
+
+#respond form p label{
+}
+
+.comments .commentlist{
+    border-bottom: 1px dotted darkslategray;
+    margin: 0;
+    width: 100%;
+    
+}
+
+div.comment{
+    border-top: 1px dotted darkslategray;
+    margin: 0;
+    padding: 3px 0;
+    min-height: 34px;
+}
+
+div.comment .content{
+    margin: 0;
+}
+
+div.comment .content div,
+div.comment .content p{
+    margin: 0;
+}
+
+
+div.comment .user{
+    width: 80px;
+    font-size: 0.8em;
+    float: right;
+    margin: 0 0 0.5ex 20px;
+    border: 1px solid darkslategray;
+    padding: 0.3em;
+    background-color: lightblue;
+    
+}
+
+div.comment .user .avatar-16{
+    height: 16px;
+    width: 16px;
+    float: right;
+}
+
+.comments-form{
+    margin: 1em 0;
+}
+
+.comments-form input[type=submit]{
+    height: 40px;
+    width: 89px;
+    padding: 3px;
+}
+
+.comments-form textarea{
+    height: 40px;
+    width: 430px;
+}
+
+.comments-form .form-submit{
+    float: right;
+}
+
+.comment .tools{
+    width: 16px; 
+    float: right;
+    margin-right: -18px;
+    display: none;
+} 
+
+.tools .ui-icon{
+    cursor: pointer;
+}
+
+#tab-comments textarea{
+    width:550px;
+}
+

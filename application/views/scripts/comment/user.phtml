@@ -1,0 +1,17 @@
+<?php 
+    $this->user = $this->user?$this->user:new UserModel();
+    $link = $this->user->getId()?
+            get_author_posts_url($this->user->getId(), $this->user->getNicename()):
+            '';
+    $this->avatarSize = $this->avatarSize? $this->avatarSize : 16;
+?>
+<div class="user_item">
+    <span class="user_id"><?php echo $this->user->getId();?></span>
+    <a href="<?php echo $link;?>">
+    <?php echo get_avatar($this->user->getEmail(), $this->avatarSize);?></a>
+    <div class="name">
+        <a href="<?php echo $link?>">
+        <?php echo $this->user->getDisplayName();?>
+        </a>
+    </div>
+</div>

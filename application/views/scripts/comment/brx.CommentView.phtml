@@ -1,0 +1,114 @@
+<?php
+//print_r($this->comment);
+if(!$this->comment){
+    $this->comment = new CommentModel();
+}
+$isTemplate = !$this->comment->getId();
+switch ($this->comment->getType()) :
+    case 'pingback' :
+    case 'trackback' :
+        break;
+    default :
+        ?>
+        <?php 
+            $status = $this->comment->getIsApproved();
+            $statusClass = '';
+            $statusMessage = '';
+            switch($status){
+                case '0':
+                    $statusClass = 'comment_moderated';
+                    $statusMessage = 'Комментарий находится на модерации, другие пользователи его не видят';
+                    break;
+                case 'spam':
+                    $statusClass = 'comment_spam';
+                    $statusMessage = 'Комментарий помечен как спам, другие пользователи его не видят';
+                    break;
+            }
+            $karma = $this->comment->getKarma();
+            $karmaClass = '';
+            if($karma){
+                $karmaClass = $karma>0?'positive_karma':'negative_karma';
+            }
+        ?>
+        <div class="brx-comment <?php echo $statusClass.' '.$karmaClass?>" widget-template="brx.CommentView" id="comment-<?php echo $isTemplate?'template':$this->comment->getId()?>" >
+            <?php 
+                $this->user = $this->comment->getUser();
+                $this->user = $this->user?$this->user:new UserModel();
+                $link = $this->user->getId()?
+                        $this->user->getProfileLink():
+                        '';
+                
+                $fieldsOrder = array(
+                    'user',
+                    'spinner',
+                    'date',
+                    'voting',
+                    'content',
+                    'status',
+                    'tools',
+                ); 
+                if(empty($this->fieldsOrder)){
+                    $this->fieldsOrder = $fieldsOrder;
+                }else{
+//                    Util::print_r($this->fieldsOrder);
+                    foreach($fieldsOrder as $item){
+                        if(!in_array($item, $this->fieldsOrder)){
+                            $this->fieldsOrder[]=$item;
+                        }
+                    }
+//                    Util::print_r($this->fieldsOrder);
+                }
+                foreach($this->fieldsOrder as $item){
+                    switch($item){
+                        case 'user':?>
+            <div class="user_item" attachPoint="userBox">
+                <span class="user_id" attachPoint="views.userId"><?php echo $this->user->getId();?></span>
+                <a href="<?php echo $link;?>" attachPoint="links.userProfile">
+                    <?php echo get_avatar($this->comment->getEmail(), 96);?>
+                    <span class="name" attachPoint="views.userName">
+                        <?php echo $this->comment->getAuthor();?>
+                    </span>
+                </a>
+            </div>
+                        <?php break;
+                        case 'spinner':?>
+            <div backbone-view="brx.SingleSpinner" attachView="spinner" class="brx_single_spinner"></div>
+                        <?php break;
+                        case 'date':?>
+            <div class="comment_date" attachPoint="views.date"><?php echo DateHelper::fixTimezone($this->comment->getDtCreated())->toString('d MMMM yyyy HH:mm');?></div>
+                        <?php break;
+                        case 'voting':?>
+            <div class="comment_voting">
+                <div class="comment_karma <?php if($this->comment->getKarma()){echo $this->comment->getKarma()>0?'positive_karma':'negative_karma';}?>" attachPoint="views.karma"><?php echo $this->comment->getKarma()>0?'+'.$this->comment->getKarma():$this->comment->getKarma();?></div>
+                <div class="comment_karma_delta <?php if($this->comment->getKarmaDelta()){echo $this->comment->getKarma()>0?'positive_karma_delta':'negative_karma_delta';}?>" attachPoint="views.karmaDelta"><?php echo $this->comment->getKarmaDelta()>0?'+'.$this->comment->getKarmaDelta():$this->comment->getKarmaDelta();?></div>
+                <div class="vote_up <?php if($this->comment->getKarmaDelta()>0){echo 'no_vote_up';}?>" attachPoint="links.voteUp" attachEvent="voteUp"></div>
+                <div class="vote_down <?php if($this->comment->getKarmaDelta()<0){echo 'no_vote_down';}?>" attachPoint="links.voteDown" attachEvent="voteDown"></div>
+            </div>
+                        <?php break;
+                        case 'content':?>
+            <div class="comment_content" attachPoint="views.content">
+                <div class="comment_reply_to" attachPoint="views.replyTo"><?php if($this->comment->getParentId()){$parent = CommentModel::selectById($this->comment->getParentId()); printf('@%s:', $parent->getAuthor()) ;}?></div>
+                <div class="comment_message" attachPoint="views.content"><?php echo String::getFirstWords($this->comment->getContent(), 300, '...'); ?></div>
+                <div class="comment_unfold" attachPoint="links.unfoldComment" attachEvent="unfoldComment" <?php HtmlHelper::hidden(strlen($this->comment->getContent()) <= 300);?>>показать целиком</div>
+            </div>
+                        <?php break;
+                        case 'status':?>
+            <div class="comment_status" attachPoint="views.status">
+                <?php echo $statusMessage;?>
+            </div>
+                        <?php break;
+                        case 'tools':?>
+            <div class="comment_tools" attachPoint="toolsBox">
+                <span class="tool_link tool_link_reply" attachPoint="links.replyToComment" attachEvent="replyToComment">Ответить</span>
+                <span class="tool_link tool_link_edit" attachPoint="links.editComment" attachEvent="editComment">Редактировать</span>
+                <span class="tool_link tool_link_delete" attachPoint="links.deleteComment" attachEvent="deleteComment">Удалить</span>
+            </div>
+                        <?php break;
+                    }
+                }
+            ?>
+            <div class="clearfloat"></div>
+        </div>
+        <?php
+        break;
+endswitch;
