@@ -12,7 +12,7 @@ require_once 'application/helpers/EmailHelper.php';
  *
  * @author borismossounov
  */
-class Comments_CommentController extends Zend_Controller_Action {
+class wpp_BRX_Comments_CommentController extends Zend_Controller_Action {
 
     //put your code here
     public function init() {

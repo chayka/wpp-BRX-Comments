@@ -1,6 +1,6 @@
 <?php
 
-class IndexController extends Zend_Controller_Action
+class wpp_BRX_Comments_IndexController extends Zend_Controller_Action
 {
 
     public function init()

@@ -1,6 +1,6 @@
 <?php
 
-class ErrorController extends Zend_Controller_Action
+class wpp_BRX_Comments_ErrorController extends Zend_Controller_Action
 {
 
     public function errorAction()
