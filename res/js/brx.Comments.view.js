@@ -113,6 +113,11 @@
         removeCommentView: function(comment){
             this.getCommentView(comment).remove();
             delete(this.options.commentViews[comment.id]);
+            this.get('views.shown').text(_.template('Показано <%= shown %> из <%= count %>', {
+                shown: this.get('commentsBox').find('.brx-comment').length,
+                count: this.get('comments').models.length
+            }));
+            this.get('views.total').text(this.get('comments').models.length);
         },
                 
         animateCommentView: function(view, cls){
