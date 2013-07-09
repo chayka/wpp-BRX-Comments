@@ -165,7 +165,7 @@ class wpp_BRX_Comments_CommentController extends Zend_Controller_Action {
     }
 
     public function voteUpAction(){
-        session_start();
+        Util::sessionStart();
         $commentId = InputHelper::getParam('id', 0);
         $comment = CommentModel::selectById($commentId, false);
         $comment->voteUp();
@@ -174,7 +174,7 @@ class wpp_BRX_Comments_CommentController extends Zend_Controller_Action {
     }
 
     public function voteDownAction(){
-        session_start();
+        Util::sessionStart();
         $commentId = InputHelper::getParam('id', 0);
         $comment = CommentModel::selectById($commentId, false);
         $comment->voteDown();
