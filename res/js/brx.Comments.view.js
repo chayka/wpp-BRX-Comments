@@ -105,6 +105,8 @@
                 view.$el.attr('id', 'comment-'+comment.id);
                 view.$el.removeAttr('widget-template');
                 this.set('commentViews.'+comment.id, view);
+            }else{
+                view.setModel(comment);
             }
             
             return view;
@@ -172,6 +174,7 @@
             var editor = this.getEditor(comment);
             view.$el.hide().after(editor.el);
             editor.$el.show();
+            editor.inputs('comment_content').focus();
             this.get('buttonsBox').show();
         },
                 
@@ -195,6 +198,7 @@
                 view.$el.before(editor.el);
             }
             editor.$el.show();
+            editor.inputs('comment_content').focus();
             this.get('buttonsBox').show();
         },
                 
@@ -268,7 +272,7 @@
             if(comment.getParentId()){
                 var collection = comment.collection || $.wp.comments[comment.getPostId()];
                 var replyTo = collection.get(comment.getParentId());
-                this.get('views.replyTo').html(_.template('@<%=to%>: ', {to: replyTo.getAuthorName()}));
+                this.get('views.replyTo').html(replyTo?_.template('@<%=to%>: ', {to: replyTo.getAuthorName()}):'[в ответ на удаленный комментарий]');
             }else{
                 this.get('views.replyTo').html('');
             }

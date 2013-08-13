@@ -87,7 +87,7 @@ switch ($this->comment->getType()) :
                         <?php break;
                         case 'content':?>
             <div class="comment_content" attachPoint="views.content">
-                <div class="comment_reply_to" attachPoint="views.replyTo"><?php if($this->comment->getParentId()){$parent = CommentModel::selectById($this->comment->getParentId()); printf('@%s:', $parent->getAuthor()) ;}?></div>
+                <div class="comment_reply_to" attachPoint="views.replyTo"><?php if($this->comment->getParentId()){$parent = CommentModel::selectById($this->comment->getParentId()); echo $parent?sprintf('@%s:', $parent->getAuthor()): '[в ответ на удаленный комментарий]';}?></div>
                 <div class="comment_message" attachPoint="views.content"><?php echo String::getFirstWords($this->comment->getContent(), 300, '...'); ?></div>
                 <div class="comment_unfold" attachPoint="links.unfoldComment" attachEvent="unfoldComment" <?php HtmlHelper::hidden(strlen($this->comment->getContent()) <= 300);?>>показать целиком</div>
             </div>
