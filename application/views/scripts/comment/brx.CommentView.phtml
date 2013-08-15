@@ -36,7 +36,7 @@ switch ($this->comment->getType()) :
                 $this->user = $this->user?$this->user:new UserModel();
                 $link = $this->user->getId()?
                         $this->user->getProfileLink():
-                        '';
+                        $this->comment->getUrl();
                 
                 $fieldsOrder = array(
                     'user',
@@ -63,12 +63,20 @@ switch ($this->comment->getType()) :
                         case 'user':?>
             <div class="user_item" attachPoint="userBox">
                 <span class="user_id" attachPoint="views.userId"><?php echo $this->user->getId();?></span>
-                <a href="<?php echo $link;?>" attachPoint="links.userProfile">
+                <?php if($link):?>
+                <a href="<?php echo preg_match('%^(https?:\/\/)|\/%', $link)?$link:'http://'.$link;?>" class="user_link" attachPoint="links.userProfile">
+                <?php else:?>
+                <span class="user_link" attachPoint="links.userProfile">
+                <?php endif;?>
                     <?php echo get_avatar($this->comment->getEmail(), 96);?>
                     <span class="name" attachPoint="views.userName">
                         <?php echo $this->comment->getAuthor();?>
                     </span>
+                <?php if($link):?>
                 </a>
+                <?php else:?>
+                </span>
+                <?php endif;?>
             </div>
                         <?php break;
                         case 'spinner':?>
@@ -87,7 +95,7 @@ switch ($this->comment->getType()) :
                         <?php break;
                         case 'content':?>
             <div class="comment_content" attachPoint="views.content">
-                <div class="comment_reply_to" attachPoint="views.replyTo"><?php if($this->comment->getParentId()){$parent = CommentModel::selectById($this->comment->getParentId()); echo $parent?sprintf('@%s:', $parent->getAuthor()): '[в ответ на удаленный комментарий]';}?></div>
+                <div class="comment_reply_to" attachPoint="views.replyTo"><?php if($this->comment->getParentId()){$parent = CommentModel::selectById($this->comment->getParentId()); echo $parent?sprintf('@%s:', $parent->getAuthor()): "[в ответ на удаленный комментарий]\n";}?></div>
                 <div class="comment_message" attachPoint="views.content"><?php echo String::getFirstWords($this->comment->getContent(), 300, '...'); ?></div>
                 <div class="comment_unfold" attachPoint="links.unfoldComment" attachEvent="unfoldComment" <?php HtmlHelper::hidden(strlen($this->comment->getContent()) <= 300);?>>показать целиком</div>
             </div>

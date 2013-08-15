@@ -120,6 +120,12 @@
                 count: this.get('comments').models.length
             }));
             this.get('views.total').text(this.get('comments').models.length);
+            var children = this.get('comments').where({comment_parent: comment.id});
+            for(var i in children){
+                var child = children[i];
+                child.trigger('change');
+            }
+        
         },
                 
         animateCommentView: function(view, cls){
@@ -272,14 +278,35 @@
             if(comment.getParentId()){
                 var collection = comment.collection || $.wp.comments[comment.getPostId()];
                 var replyTo = collection.get(comment.getParentId());
-                this.get('views.replyTo').html(replyTo?_.template('@<%=to%>: ', {to: replyTo.getAuthorName()}):'[в ответ на удаленный комментарий]');
+                this.get('views.replyTo').html(replyTo?_.template('@<%=to%>: ', {to: replyTo.getAuthorName()}):"[в ответ на удаленный комментарий]\n");
             }else{
                 this.get('views.replyTo').html('');
             }
             var user = parseInt(comment.getUserId())?
                 $.wp.users.get(parseInt(comment.getUserId())):null;
+            var link = user?user.getProfileLink():comment.getUrl();
+            if(link && this.get('links.userProfile').is('span')){
+                var a = $('<a href="" class="user_link"></a>');
+                this.get('links.userProfile')
+                    .find('*').appendTo(a);
+                a.insertAfter(this.get('links.userProfile'));
+                this.get('links.userProfile').remove();
+                this.set('links.userProfile', a);
+            }else if(!link && this.get('links.userProfile').is('a')){
+                var span = $('<span class="user_link"></span>');
+                this.get('links.userProfile')
+                    .find('*').appendTo(span);
+                span.insertAfter(this.get('links.userProfile'));
+                this.get('links.userProfile').remove();
+                this.set('links.userProfile', span);
+            }
+            if(link){
+                var re = new RegExp('^(https?:\/\/)|\/');
+                this.get('links.userProfile')
+                    .attr('href', re.test(link)?link:'http://'+link);
+            }
             this.get('links.userProfile')
-                    .attr('href', user?user.getProfileLink():comment.getUrl())
+//                    .attr('href', user?user.getProfileLink():comment.getUrl())
                 .find('img.avatar')
                     .attr('src', $.brx.utils.gravatar(comment.getEmail(), 96));
             this.get('views.userId').val(comment.getUserId());
