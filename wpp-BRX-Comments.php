@@ -45,6 +45,7 @@ class wpp_BRX_Comments {
     }
     
     public static function installPlugin() {
+        LessHelper::addImportDir(WPP_BRX_COMMENTS_PATH.'res/css');
         self::registerResources();
         self::registerActions();
         self::registerFilters();
