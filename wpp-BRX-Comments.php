@@ -11,16 +11,6 @@
  */
 
 
-//define( 'WPP_BRX_COMMENTS_PATH', plugin_dir_path(__FILE__) );
-//define( 'WPP_BRX_COMMENTS_URL', preg_replace('%^[\w\d]+\:\/\/[\w\d\.]+%', '',plugin_dir_url(__FILE__)) );
-
-//require_once 'application/helpers/OptionHelper_Comments.php';
-//require_once 'widgets-Comments.php';
-
-//ZF_Query::registerApplication('WPP_BRX_COMMENTS', WPP_BRX_COMMENTS_PATH.'application', 
-//        array('comment'));
-//require_once 'application/helpers/UrlHelper_wpp_BRX_Comments.php';
-
 class wpp_BRX_Comments extends WpPlugin{
     const NLS_DOMAIN = "Comments";
     
@@ -36,8 +26,9 @@ class wpp_BRX_Comments extends WpPlugin{
                         'tools',
                     );
     
-    public static function initPlugin() {
-        self::$instance = new wpp_BRX_Comments(__FILE__, array('comment'));
+    public static function init() {
+        return self::$instance = $plugin = new wpp_BRX_Comments(__FILE__, array('comment'));
+        $plugin->addSupport_PostProcessing();
     }
 
     public function registerResources($minimize = false){
@@ -125,5 +116,5 @@ class wpp_BRX_Comments extends WpPlugin{
 
 }
 
-add_action('init', array('wpp_BRX_Comments', 'initPlugin'));
+add_action('init', array('wpp_BRX_Comments', 'init'));
     
