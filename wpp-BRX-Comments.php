@@ -31,6 +31,18 @@ class wpp_BRX_Comments extends WpPlugin{
         $plugin->addSupport_PostProcessing();
     }
 
+    /**
+     * 
+     * @return wpp_BRX_Comments
+     */
+    public static function getInstance() {
+        return self::$instance;
+    }
+
+    public static function baseUrl() {
+        echo self::getInstance()->getBaseUrl();
+    }
+
     public function registerResources($minimize = false){
         
         $this->registerStyle('jquery-brx-comments', 'bem-comments.less');
