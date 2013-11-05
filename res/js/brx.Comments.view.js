@@ -1,5 +1,5 @@
-(function($){
-    $.declare('brx.CommentsList', $.brx.View, {
+(function($, _, Backbone){
+    _.declare('brx.CommentsList', $.brx.View, {
         options: {
             order: 'asc',
             perPage: 50,
@@ -45,7 +45,7 @@
             var comments = this.get('comments').models;
             var shown = this.getInt('shown');
 //            var offset = Math.max(0, (page-1)*this.getInt('perPage'));
-            var prevView = offset?this.getCommentView(comments[comments.length-offset]):null
+            var prevView = offset?this.getCommentView(comments[comments.length-offset]):null;
             for(var i = comments.length-1-offset, j = offset; j < shown && i >= 0; i--, j++){
                 var comment = comments[i];
                 var view = this.renderComment(comment);
@@ -178,7 +178,7 @@
         editComment: function(comment){
             var view = this.getCommentView(comment);
             var editor = this.getEditor(comment);
-            view.$el.hide().after(editor.el);
+            view.$el.addClass('editing').hide().after(editor.el);
             editor.$el.show();
             editor.inputs('comment_content').focus();
             this.get('buttonsBox').show();
@@ -187,10 +187,18 @@
         onCommentUpdated: function(comment){
             var view = this.getCommentView(comment);
 //            var editor = this.getEditor();
-            view.$el.show();
+            view.$el.removeClass('editing').show();
             this.animateCommentView(view);
             this.showBottomEditor();
 //            editor.$el.hide();
+        },
+                
+        onEditorCanceled: function(comment){
+            if(comment && comment.id){
+                var view = this.getCommentView(comment);
+                view.$el.show();
+            }
+            this.showBottomEditor();
         },
                 
         replyToComment: function(comment){
@@ -219,14 +227,6 @@
             this.showBottomEditor();
         },
                 
-        onEditorCanceled: function(comment){
-            if(comment && comment.id){
-                var view = this.getCommentView(comment);
-                view.$el.show();
-            }
-            this.showBottomEditor();
-        },
-                
         onReplyCanceled: function(comment){
 //            var view = this.getCommentView(comment);
 //            view.$el.removeClass('reply_to');
@@ -235,7 +235,12 @@
         },
                 
         showBottomEditor: function(){
+    
+            this.get('commentsBox').find('.editing').removeClass('editing').show();
+            this.get('commentsBox').find('.reply_to').removeClass('reply_to');
+            
             var editor = this.getEditor();
+            editor.setFormFieldStateClear('comment_content');
             if('asc' === this.get('order')){
                 editor.$el.insertAfter(this.get('commentsBox')).show();
             }else{
@@ -246,7 +251,7 @@
         }
     });
     
-    $.declare('brx.CommentView', $.brx.View, {
+    _.declare('brx.CommentView', $.brx.View, {
         options: {
 //            templateSelector: '#comment-view-template'
             full: false
@@ -333,7 +338,7 @@
             if(delta){
                 this.get('views.karmaDelta')
                     .removeClass(delta>0?'negative_karma_delta':'positive_karma_delta')
-                    .addClass(delta<0?'negative_karma_delta':'positive_karma_delta')
+                    .addClass(delta<0?'negative_karma_delta':'positive_karma_delta');
                 if(delta > 0){
                     this.get('links.voteUp').addClass('no_vote_up');
                     this.get('links.voteDown').removeClass('no_vote_down');
@@ -392,9 +397,9 @@
                     }, this),
                     error: $.proxy(function(model, xhr, options){
                         this.hideSpinner();
-                    }, this),
+                    }, this)
                 });
-            }, this))
+            }, this));
         },
                 
         voteUp: function(){
@@ -423,7 +428,7 @@
         
     });
     
-    $.declare('brx.CommentEditor', $.brx.FormView, {
+    _.declare('brx.CommentEditor', $.brx.FormView, {
         options: {
             postId: 0,
             mode: 'add',
@@ -493,7 +498,7 @@
             this.setFieldValue('comment_author', comment.getAuthor());
             this.setFieldValue('comment_author_email', comment.getEmail());
             this.setFieldValue('comment_author_url', comment.getUrl());
-            this.buttons('cancel').css('display', this.get('mode')!='add'?'inline':'none');
+            this.buttons('cancel').css('display', this.get('mode')!=='add'?'inline':'none');
             switch(this.get('mode')){
                 case 'add':
 //                    this.setLabelText('comment_content','Ваш комментарий')
@@ -536,7 +541,7 @@
                 return;
             }
             var data = {
-                comment_content: this.getFieldValue('comment_content'),
+                comment_content: this.getFieldValue('comment_content')
             };
             if(!$.wp.currentUser.id){
                 this.options.stored.name = data['comment_author'] = this.getFieldValue('comment_author');
@@ -549,7 +554,7 @@
                 silent: true,
                 success: $.proxy(function(model, response, options){
                     this.hideFieldSpinner('comment_content');
-                    if(0 == response.code){
+                    if(0 === response.code){
                         console.dir({'success': arguments});
                         $.wp.comments[model.getPostId()].set([model], {remove:false});
                         var event = 'brx.CommentEditor.commentCreated';
@@ -581,7 +586,7 @@
                     this.setMessage(message, true);
                     this.showMessage();
                 },this)
-            })
+            });
         },
                 
         buttonCancelClicked: function(event){
@@ -606,6 +611,6 @@
             Backbone.Events.trigger('brx.Comments.refresh');
         }
     });
-}(jQuery));
+}(jQuery, _, Backbone));
 
 
