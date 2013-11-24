@@ -48,7 +48,7 @@ class wpp_BRX_Comments extends WpPlugin{
         $this->registerStyle('jquery-brx-comments', 'bem-comments.less');
         $this->registerScript('jquery-brx-comments', 'jquery.brx.comments.js', array('jquery-brx-form'));
         $this->registerStyle('backbone-brx-comments', 'brx.Comments.view.less', array('backbone-brx-spinners'));
-        $this->registerScript('backbone-brx-comments', 'brx.Comments.view.js', array('backbone-brx', 'backbone-wp-models', 'backbone-brx-spinners', 'moment'));
+        $this->registerScript('backbone-brx-comments', 'brx.Comments.view.js', array('backbone-brx', 'backbone-wp-models', 'backbone-brx-spinners', 'moment', 'jquery-effects-fade'));
 
     }
     
