@@ -29,8 +29,8 @@
     <?php add_action('wp_footer', array('BackboneHelper', 'populateUsers'), 90);?>
     <?php endif; ?>
     <?php $this->title = $this->title?$this->title:'Комментарии';?>
-    <div backbone-view<?php if ($isTemplate):?>Template<?php endif;?>="brx.CommentsList" id="comments-<?php the_ID(); echo $isTemplate?'template':''?>" comments-var="$.wp.comments.<?php the_ID();?>" postId="<?php the_ID();?>" order="<?php echo $this->order;?>" perPage="<?php echo $this->perPage;?>">
-        <h3><span class="comments_title"><?php echo $this->title;?> (<span attachPoint="views.total"><?php echo $total ?></span>)</span></h3>
+    <div data-view<?php if ($isTemplate):?>-template<?php endif;?>="brx.CommentsList" id="comments-<?php the_ID(); echo $isTemplate?'template':''?>" data-import-comments="$.wp.comments.<?php the_ID();?>" data-postId="<?php the_ID();?>" data-order="<?php echo $this->order;?>" data-perPage="<?php echo $this->perPage;?>">
+        <h3><span class="comments_title"><?php echo $this->title;?> (<span data-attach-point="views.total"><?php echo $total ?></span>)</span></h3>
         <script id="comment-view-template" type="text/template">
         <?php            
             $templateComment = new CommentModel();
@@ -38,14 +38,14 @@
         ?>
         </script>
         <?php if($direct):?>
-        <div class="show_hidden_pane" attachPoint="showHiddenBox" <?php HtmlHelper::hidden($total<=$this->perPage);?>><span class="link" attachEvent="showMoreComments">Просмотреть более ранние комментарии...</span><span attachPoint="views.shown" class="shown_total"><?php printf('Показано %d из %d', $this->perPage, count($this->post->getComments()));?></span></div>
+        <div class="show_hidden_pane" data-attach-point="showHiddenBox" <?php HtmlHelper::hidden($total<=$this->perPage);?>><span class="link" data-attach-event="showMoreComments">Просмотреть более ранние комментарии...</span><span data-attach-point="views.shown" class="shown_total"><?php printf('Показано %d из %d', $this->perPage, count($this->post->getComments()));?></span></div>
         <?php else:?>
         <?php echo $this->partial('comment/brx.CommentEditor.phtml', array('post'=>$this->post));?>
-        <div class="button_pane" attachPoint="buttonsBox" <?php HtmlHelper::hidden();?>>
-            <button class="btn_add_comment" attachPoint="buttons.addComment" attachEvent="showBottomEditor" >Добавить свой комментарий</button>
+        <div class="button_pane" data-attach-point="buttonsBox" <?php HtmlHelper::hidden();?>>
+            <button class="btn_add_comment" data-attach-point="buttons.addComment" data-attach-event="showBottomEditor" >Добавить свой комментарий</button>
         </div>
         <?php endif;?>
-        <div class="comment_list" attachPoint="commentsBox">
+        <div class="comment_list" data-attach-point="commentsBox">
             <?php
 //            foreach($this->post->getComments() as $comment){
 //            }
@@ -61,11 +61,11 @@
             ?>
         </div>
         <?php if(!$direct):?>
-        <div class="show_hidden_pane" attachPoint="showHiddenBox" <?php HtmlHelper::hidden($total<=$this->perPage);?>><span class="link" attachEvent="showMoreComments">Просмотреть более ранние комментарии...</span><span attachPoint="views.shown" class="shown_total"><?php printf('Показано %d из %d', $this->perPage, count($this->post->getComments()));?></span></div>
+        <div class="show_hidden_pane" data-attach-point="showHiddenBox" <?php HtmlHelper::hidden($total<=$this->perPage);?>><span class="link" data-attach-event="showMoreComments">Просмотреть более ранние комментарии...</span><span data-attach-point="views.shown" class="shown_total"><?php printf('Показано %d из %d', $this->perPage, count($this->post->getComments()));?></span></div>
         <?php else:?>
         <?php echo $this->partial('comment/brx.CommentEditor.phtml', array('post'=>$this->post));?>
-        <div class="button_pane" attachPoint="buttonsBox" <?php HtmlHelper::hidden();?>>
-            <button class="btn_add_comment" attachPoint="buttons.addComment" attachEvent="showBottomEditor" >Добавить свой комментарий</button>
+        <div class="button_pane" data-attach-point="buttonsBox" <?php HtmlHelper::hidden();?>>
+            <button class="btn_add_comment" data-attach-point="buttons.addComment" data-attach-event="showBottomEditor" >Добавить свой комментарий</button>
         </div>
         <?php endif;?>
 

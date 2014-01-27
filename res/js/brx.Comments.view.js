@@ -92,7 +92,7 @@
             var view = _.getItem(this.get('commentViews'), comment.id);
             if(!view){
                 var options = {model: comment};
-                var div = this.$('#comment-'+comment.id).restoreTemplatedAttrs();
+                var div = this.$('#comment-'+comment.id).restoreParserAttrs();
                 if(div.length){
 //                    view.setElement(div[0]);
 //                    options.templateSelector = '';
@@ -268,11 +268,12 @@
 //            var animate = animate || false;
 //    window.moment.lang('ru');
             var comment = this.getModel();
-            if($.brx.utils.empty(comment.id)){ 
+            if(_.empty(comment.id)){ 
                 return;
             }
             this.get('views.date').text(moment(comment.getDate()).format('D MMMM YYYY HH:mm'));
 //            this.get('views.content').html(comment.getContent());
+            this.set('full', /<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/.test(comment.getContent()));
             if(comment.getContent().length > 300 && !this.get('full')){
                 this.get('views.content').html($.brx.utils.truncate(comment.getContent(), 300));
                 this.get('links.unfoldComment').css('display', 'inline');
@@ -390,15 +391,19 @@
         
         deleteComment: function(){
             $.brx.modalConfirm('Удалить комментарий?<br/>"'+this.getModel().getContent()+'"', $.proxy(function(){
-                this.showSpinner('Удаление...');
-                this.getModel().destroy({
-                    success: $.proxy(function(model, response, options){
-                        this.hideSpinner();
-                    }, this),
-                    error: $.proxy(function(model, xhr, options){
-                        this.hideSpinner();
-                    }, this)
+                this.destroyModel({
+                    spinnerMessage: 'Удаление...',
+                    errorMessage: 'Ошибка удаления комментария'
                 });
+//                this.showSpinner('Удаление...');
+//                this.getModel().destroy({
+//                    success: $.proxy(function(model, response, options){
+//                        this.hideSpinner();
+//                    }, this),
+//                    error: $.proxy(function(model, xhr, options){
+//                        this.hideSpinner();
+//                    }, this)
+//                });
             }, this));
         },
                 
@@ -548,12 +553,12 @@
                 this.options.stored.email = data['comment_author_email'] = this.getFieldValue('comment_author_email');
                 this.options.stored.url = data['comment_author_url'] = this.getFieldValue('comment_author_url');
             }
-            this.showFieldSpinner('comment_content');
-            this.getModel().save(data, {
-                wait: true,
-                silent: true,
+            this.saveModel(data, {
+                spinnerFieldId: 'comment_content',
+                spinnerMessage: 'Отправка данных...',
+                errorMessage: 'Ошибка добавления комментария',
                 success: $.proxy(function(model, response, options){
-                    this.hideFieldSpinner('comment_content');
+//                    this.hideFieldSpinner('comment_content');
                     if(0 === response.code){
                         console.dir({'success': arguments});
                         $.wp.comments[model.getPostId()].set([model], {remove:false});
@@ -573,20 +578,49 @@
                         Backbone.Events.trigger(event, model);
                         this.setBlankModel();
                     }else{
-                        this.handleAjaxErrors(response);
-                        this.showMessage();
+//                        this.handleAjaxErrors(response);
+//                        this.showMessage();
                     }
-                },this),
-                error: $.proxy(function(model, xhr, options){
-                    console.dir({'fail': arguments});
-                    this.hideFieldSpinner('comment_content');
-                    var message = $.brx.utils.processFail(xhr) 
-                        || 'Ошибка добавления комментария';
-//                    console.log(message);
-                    this.setMessage(message, true);
-                    this.showMessage();
                 },this)
             });
+//            this.showFieldSpinner('comment_content');
+//            this.getModel().save(data, {
+//                wait: true,
+//                silent: true,
+//                success: $.proxy(function(model, response, options){
+//                    this.hideFieldSpinner('comment_content');
+//                    if(0 === response.code){
+//                        console.dir({'success': arguments});
+//                        $.wp.comments[model.getPostId()].set([model], {remove:false});
+//                        var event = 'brx.CommentEditor.commentCreated';
+//                        switch(this.get('mode')){
+//                            case 'edit':
+//                                event = 'brx.CommentEditor.commentUpdated';
+////                                this.$el.hide();
+//                                break;
+//                            case 'reply':
+//                                this.set('replyTo', null);
+//                                event = 'brx.CommentEditor.commentReplied';
+////                                this.$el.hide();
+//                                break;
+//                        }
+//
+//                        Backbone.Events.trigger(event, model);
+//                        this.setBlankModel();
+//                    }else{
+//                        this.handleAjaxErrors(response);
+//                        this.showMessage();
+//                    }
+//                },this),
+//                error: $.proxy(function(model, xhr, options){
+//                    console.dir({'fail': arguments});
+//                    this.hideFieldSpinner('comment_content');
+//                    var message = $.brx.utils.processFail(xhr) 
+//                        || 'Ошибка добавления комментария';
+//                    this.setMessage(message, true);
+//                    this.showMessage();
+//                },this)
+//            });
         },
                 
         buttonCancelClicked: function(event){

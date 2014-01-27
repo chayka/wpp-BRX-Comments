@@ -61,15 +61,15 @@ switch ($this->comment->getType()) :
                 foreach($this->fieldsOrder as $item){
                     switch($item){
                         case 'user':?>
-            <div class="user_item" attachPoint="userBox">
-                <span class="user_id" attachPoint="views.userId"><?php echo $this->user->getId();?></span>
+            <div class="user_item" data-attach-point="userBox">
+                <span class="user_id" data-attach-point="views.userId"><?php echo $this->user->getId();?></span>
                 <?php if($link):?>
-                <a href="<?php echo preg_match('%^(https?:\/\/)|\/%', $link)?$link:'http://'.$link;?>" class="user_link" attachPoint="links.userProfile">
+                <a href="<?php echo preg_match('%^(https?:\/\/)|\/%', $link)?$link:'http://'.$link;?>" class="user_link" data-attach-point="links.userProfile">
                 <?php else:?>
-                <span class="user_link" attachPoint="links.userProfile">
+                <span class="user_link" data-attach-point="links.userProfile">
                 <?php endif;?>
                     <?php echo get_avatar($this->comment->getEmail(), 96);?>
-                    <span class="name" attachPoint="views.userName">
+                    <span class="name" data-attach-point="views.userName">
                         <?php echo $this->comment->getAuthor();?>
                     </span>
                 <?php if($link):?>
@@ -80,36 +80,36 @@ switch ($this->comment->getType()) :
             </div>
                         <?php break;
                         case 'spinner':?>
-            <div backbone-view="brx.SingleSpinner" attachView="spinner" class="brx_single_spinner"></div>
+            <div data-view="brx.SingleSpinner" data-attach-view="spinner" class="brx_single_spinner"></div>
                         <?php break;
                         case 'date':?>
-            <div class="comment_date" attachPoint="views.date"><?php echo DateHelper::fixTimezone($this->comment->getDtCreated())->toString('d MMMM yyyy HH:mm');?></div>
+            <div class="comment_date" data-attach-point="views.date"><?php echo DateHelper::fixTimezone($this->comment->getDtCreated())->toString('d MMMM yyyy HH:mm');?></div>
                         <?php break;
                         case 'voting':?>
             <div class="comment_voting">
-                <div class="comment_karma <?php if($this->comment->getKarma()){echo $this->comment->getKarma()>0?'positive_karma':'negative_karma';}?>" attachPoint="views.karma"><?php echo $this->comment->getKarma()>0?'+'.$this->comment->getKarma():$this->comment->getKarma();?></div>
-                <div class="comment_karma_delta <?php if($this->comment->getKarmaDelta()){echo $this->comment->getKarma()>0?'positive_karma_delta':'negative_karma_delta';}?>" attachPoint="views.karmaDelta"><?php echo $this->comment->getKarmaDelta()>0?'+'.$this->comment->getKarmaDelta():$this->comment->getKarmaDelta();?></div>
-                <div class="vote_up <?php if($this->comment->getKarmaDelta()>0){echo 'no_vote_up';}?>" attachPoint="links.voteUp" attachEvent="voteUp"></div>
-                <div class="vote_down <?php if($this->comment->getKarmaDelta()<0){echo 'no_vote_down';}?>" attachPoint="links.voteDown" attachEvent="voteDown"></div>
+                <div class="comment_karma <?php if($this->comment->getKarma()){echo $this->comment->getKarma()>0?'positive_karma':'negative_karma';}?>" data-attach-point="views.karma"><?php echo $this->comment->getKarma()>0?'+'.$this->comment->getKarma():$this->comment->getKarma();?></div>
+                <div class="comment_karma_delta <?php if($this->comment->getKarmaDelta()){echo $this->comment->getKarma()>0?'positive_karma_delta':'negative_karma_delta';}?>" data-attach-point="views.karmaDelta"><?php echo $this->comment->getKarmaDelta()>0?'+'.$this->comment->getKarmaDelta():$this->comment->getKarmaDelta();?></div>
+                <div class="vote_up <?php if($this->comment->getKarmaDelta()>0){echo 'no_vote_up';}?>" data-attach-point="links.voteUp" data-attach-event="voteUp"></div>
+                <div class="vote_down <?php if($this->comment->getKarmaDelta()<0){echo 'no_vote_down';}?>" data-attach-point="links.voteDown" data-attach-event="voteDown"></div>
             </div>
                         <?php break;
                         case 'content':?>
-            <div class="comment_content" attachPoint="views.content">
-                <div class="comment_reply_to" attachPoint="views.replyTo"><?php if($this->comment->getParentId()){$parent = CommentModel::selectById($this->comment->getParentId()); echo $parent?sprintf('@%s:', $parent->getAuthor()): "[в ответ на удаленный комментарий]\n";}?></div>
-                <div class="comment_message" attachPoint="views.content"><?php echo String::getFirstWords($this->comment->getContent(), 300, '...'); ?></div>
-                <div class="comment_unfold" attachPoint="links.unfoldComment" attachEvent="unfoldComment" <?php HtmlHelper::hidden(strlen($this->comment->getContent()) <= 300);?>>показать целиком</div>
+            <div class="comment_content" data-attach-point="views.content">
+                <div class="comment_reply_to" data-attach-point="views.replyTo"><?php if($this->comment->getParentId()){$parent = CommentModel::selectById($this->comment->getParentId()); echo $parent?sprintf('@%s:', $parent->getAuthor()): "[в ответ на удаленный комментарий]\n";}?></div>
+                <div class="comment_message" data-attach-point="views.content"><?php echo String::getFirstWords($this->comment->getContent(), 300, '...'); ?></div>
+                <div class="comment_unfold" data-attach-point="links.unfoldComment" data-attach-event="unfoldComment" <?php HtmlHelper::hidden(strlen($this->comment->getContent()) <= 300);?>>показать целиком</div>
             </div>
                         <?php break;
                         case 'status':?>
-            <div class="comment_status" attachPoint="views.status">
+            <div class="comment_status" data-attach-point="views.status">
                 <?php echo $statusMessage;?>
             </div>
                         <?php break;
                         case 'tools':?>
-            <div class="comment_tools" attachPoint="toolsBox">
-                <span class="tool_link tool_link_reply" attachPoint="links.replyToComment" attachEvent="replyToComment">Ответить</span>
-                <span class="tool_link tool_link_edit" attachPoint="links.editComment" attachEvent="editComment">Редактировать</span>
-                <span class="tool_link tool_link_delete" attachPoint="links.deleteComment" attachEvent="deleteComment">Удалить</span>
+            <div class="comment_tools" data-attach-point="toolsBox">
+                <span class="tool_link tool_link_reply" data-attach-point="links.replyToComment" data-attach-event="replyToComment">Ответить</span>
+                <span class="tool_link tool_link_edit" data-attach-point="links.editComment" data-attach-event="editComment">Редактировать</span>
+                <span class="tool_link tool_link_delete" data-attach-point="links.deleteComment" data-attach-event="deleteComment">Удалить</span>
             </div>
                         <?php break;
                     }

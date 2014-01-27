@@ -31,7 +31,7 @@
     <h3><?php echo $this->title;?></h3>
     <div widget<?php if ($isTemplate):?>Template<?php endif;?>="brx.comments" id="comments-<?php the_ID(); echo $isTemplate?'template':''?>">
 
-        <div class="comment_list" attachPoint="commentsBox">
+        <div class="comment_list" data-attach-point="commentsBox">
             <?php
             /* Loop through and list the comments. Tell wp_list_comments()
              * to use twentyeleven_comment() to format the comments.
@@ -58,30 +58,30 @@
         <form class="form_add_comment" id="addCommentForm_<?php echo $this->post->getId();?>" method="post" action="/api/comment/publish">
             <input type="hidden" id="comment_post_ID" value="<?php the_ID;?>" name="comment_post_ID">
             <input type="hidden" value="0" id="comment_parent" name="comment_parent">
-            <div attachPoint="fields.comment" class="form_field">
+            <div data-attach-point="fields.comment" class="form_field">
                 <div class="form_field-input_box">
-                    <textarea rows="8" cols="45" name="comment" attachPoint="inputs.comment" class="text ui-widget-content ui-corner-all" style=""></textarea>
+                    <textarea rows="8" cols="45" name="comment" data-attach-point="inputs.comment" class="text ui-widget-content ui-corner-all" style=""></textarea>
                 </div>
                 <div class="form_field-tips"></div>
             </div>
             <div class="form_box-buttons">
-                <button attachPoint="buttons.publish" attachEvent="buttonPublishClicked" widget="button" class="btn btn_publish" >Написать</button>
+                <button data-attach-point="buttons.publish" data-attach-event="buttonPublishClicked" widget="button" class="btn btn_publish" >Написать</button>
             </div>
-            <div attachPoint="messageBox" class="clearfloat"></div>
+            <div data-attach-point="messageBox" class="clearfloat"></div>
             <div class="clearfloat"></div>
         </form>
-        <form class="form_edit_comment" attachPoint="editorBox" id="updateCommentForm_<?php echo $this->post->getId();?>" method="post" action="/api/comment/update" style="display: none; ">
-            <input  attachPoint="inputs.commentId" type="hidden" id="comment_ID" value="" name="comment_ID">
+        <form class="form_edit_comment" data-attach-point="editorBox" id="updateCommentForm_<?php echo $this->post->getId();?>" method="post" action="/api/comment/update" style="display: none; ">
+            <input  data-attach-point="inputs.commentId" type="hidden" id="comment_ID" value="" name="comment_ID">
             <input type="hidden" value="0" id="comment_parent" name="comment_parent">
-            <div attachPoint="fields.content" class="form_field" >
+            <div data-attach-point="fields.content" class="form_field" >
                 <div class="form_field-input_box">
-                    <textarea rows="2" cols="45" name="comment" attachPoint="inputs.content" class="text ui-widget-content ui-corner-all" style=""></textarea>
+                    <textarea rows="2" cols="45" name="comment" data-attach-point="inputs.content" class="text ui-widget-content ui-corner-all" style=""></textarea>
                 </div>
                 <div class="form_field-tips"></div>
             </div>
             <div class="form_box-buttons">
-                <button attachPoint="buttons.update" attachEvent="buttonUpdateClicked" widget="button" class="btn btn_save" style=""><!--span class="ui-icon ui-icon-disk"></span-->Обновить</button>
-                <button attachPoint="buttons.cancel" attachEvent="hideEditorBox" widget="button" class="btn btn_cancel" ><!--span class="ui-icon ui-icon-cancel"></span-->Отмена</button>
+                <button data-attach-point="buttons.update" data-attach-event="buttonUpdateClicked" widget="button" class="btn btn_save" style=""><!--span class="ui-icon ui-icon-disk"></span-->Обновить</button>
+                <button data-attach-point="buttons.cancel" data-attach-event="hideEditorBox" widget="button" class="btn btn_cancel" ><!--span class="ui-icon ui-icon-cancel"></span-->Отмена</button>
             </div>
             <div class="clearfloat"></div>
         </form>
