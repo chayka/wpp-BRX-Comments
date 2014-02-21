@@ -390,20 +390,12 @@
         },
         
         deleteComment: function(){
-            $.brx.modalConfirm('Удалить комментарий?<br/>"'+this.getModel().getContent()+'"', $.proxy(function(){
+//            $.brx.modalConfirm('Удалить комментарий?<br/>"'+this.getModel().getContent()+'"', $.proxy(function(){
+            $.brx.Modals.confirm('Удалить комментарий?<br/>"'+this.getModel().getContent()+'"', $.proxy(function(){
                 this.destroyModel({
                     spinnerMessage: 'Удаление...',
                     errorMessage: 'Ошибка удаления комментария'
                 });
-//                this.showSpinner('Удаление...');
-//                this.getModel().destroy({
-//                    success: $.proxy(function(model, response, options){
-//                        this.hideSpinner();
-//                    }, this),
-//                    error: $.proxy(function(model, xhr, options){
-//                        this.hideSpinner();
-//                    }, this)
-//                });
             }, this));
         },
                 

@@ -20,7 +20,7 @@
         if(!$isTemplate):
             ?>
     <?php 
-        $this->post->loadComments(array('order'=>'asc')); 
+        $this->post->loadComments(array('order'=>'asc', 'status'=>'approve')); 
         $this->post->populateWpGlobals();
         $total = count($this->post->getComments());
         $direct = $this->order == 'asc';
