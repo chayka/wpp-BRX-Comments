@@ -273,7 +273,9 @@
             }
             this.get('views.date').text(moment(comment.getDate()).format('D MMMM YYYY HH:mm'));
 //            this.get('views.content').html(comment.getContent());
-            this.set('full', /<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/.test(comment.getContent()));
+            if(/<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/.test(comment.getContent())){
+                this.set('full', true);
+            }
             if(comment.getContent().length > 300 && !this.get('full')){
                 this.get('views.content').html($.brx.utils.truncate(comment.getContent(), 300));
                 this.get('links.unfoldComment').css('display', 'inline');
