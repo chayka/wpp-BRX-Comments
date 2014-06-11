@@ -313,10 +313,17 @@
                 this.get('links.userProfile')
                     .attr('href', re.test(link)?link:'http://'+link);
             }
+            var fb_user_id = comment.get('meta.fb_user_id');
+            var avatarLink = '#';
+            if(fb_user_id){
+                avatarLink = $.brx.utils.fbavatar(fb_user_id, 96);
+            }else{
+                avatarLink = $.brx.utils.gravatar(comment.getEmail(), 96)
+            }
             this.get('links.userProfile')
 //                    .attr('href', user?user.getProfileLink():comment.getUrl())
                 .find('img.avatar')
-                    .attr('src', $.brx.utils.gravatar(comment.getEmail(), 96));
+                    .attr('src', avatarLink);
             this.get('views.userId').val(comment.getUserId());
             this.get('views.userName').text(user?user.getDisplayName():comment.getAuthor());
             if($.wp.currentUser.id){
@@ -473,6 +480,10 @@
                     $.wp.currentUser.getUrl():
                     this.get('stored.url')
             });
+            var fb_user_id = $.wp.currentUser.get('meta.fb_user_id');
+            if(fb_user_id){
+                model.set('meta.fb_user_id', fb_user_id);
+            }
             this.set('replyTo', parent);
             this.setModel(model);
         },
@@ -515,7 +526,10 @@
 //                    this.inputs('comment_content').select();
                     break;
             }
-            if(comment.getEmail()){
+            var fb_user_id = comment.get('meta.fb_user_id');
+            if(fb_user_id){
+                this.get('avatarView').attr('src', $.brx.utils.fbavatar(fb_user_id, 96));
+            }else if(comment.getEmail()){
                 this.get('avatarView').attr('src', $.brx.utils.gravatar(comment.getEmail(), 96));
             }
 //            this.inputs('comment').text(comment.get('content'))
@@ -577,44 +591,6 @@
                     }
                 },this)
             });
-//            this.showFieldSpinner('comment_content');
-//            this.getModel().save(data, {
-//                wait: true,
-//                silent: true,
-//                success: $.proxy(function(model, response, options){
-//                    this.hideFieldSpinner('comment_content');
-//                    if(0 === response.code){
-//                        console.dir({'success': arguments});
-//                        $.wp.comments[model.getPostId()].set([model], {remove:false});
-//                        var event = 'brx.CommentEditor.commentCreated';
-//                        switch(this.get('mode')){
-//                            case 'edit':
-//                                event = 'brx.CommentEditor.commentUpdated';
-////                                this.$el.hide();
-//                                break;
-//                            case 'reply':
-//                                this.set('replyTo', null);
-//                                event = 'brx.CommentEditor.commentReplied';
-////                                this.$el.hide();
-//                                break;
-//                        }
-//
-//                        Backbone.Events.trigger(event, model);
-//                        this.setBlankModel();
-//                    }else{
-//                        this.handleAjaxErrors(response);
-//                        this.showMessage();
-//                    }
-//                },this),
-//                error: $.proxy(function(model, xhr, options){
-//                    console.dir({'fail': arguments});
-//                    this.hideFieldSpinner('comment_content');
-//                    var message = $.brx.utils.processFail(xhr) 
-//                        || 'Ошибка добавления комментария';
-//                    this.setMessage(message, true);
-//                    this.showMessage();
-//                },this)
-//            });
         },
                 
         buttonCancelClicked: function(event){
