@@ -16,6 +16,7 @@
             this.listenTo(this.get('comments'), 'add', $.proxy(this.onCommentPosted, this));
             this.listenTo(this.get('comments'), 'remove', $.proxy(this.removeCommentView, this));
             this.listenTo(this.get('comments'), 'reset', $.proxy(this.renderComments, this));
+            this.listenTo(this.get('comments'), 'change', $.proxy(this.renderComments, this));
 //            this.listenTo(this.get('comments'), 'all', $.proxy(this.render, this));
             this.listenTo(Backbone.Events, 'brx.Comments.editComment', $.proxy(this.editComment, this));
             this.listenTo(Backbone.Events, 'brx.Comments.replyToComment', $.proxy(this.replyToComment, this));
@@ -25,6 +26,8 @@
             this.listenTo(Backbone.Events, 'brx.CommentEditor.replyCanceled', $.proxy(this.onReplyCanceled, this));
             this.listenTo(Backbone.Events, 'brx.Comments.refresh', $.proxy(this.refreshComments, this));
             this.render();
+            
+            $(document).on('userChanged', $.proxy(this.refreshComments, this));
 //            var editor = new $.brx.CommentEditor({el: this.$('#comment-editor-template').html()});
 //            this.set('commentEditForm', editor);
         },
@@ -35,21 +38,30 @@
         },
                 
         refreshComments: function(){
-            this.get('comments').fetch({data:{post_id: this.getInt('postId')}});
+            this.get('comments').fetch({
+                data:{post_id: this.getInt('postId')},
+                success: $.proxy(function(){
+                    this.renderComments();
+                }, this)
+            });
         },
                 
         renderComments: function(offset){
             offset = offset || 0;
-//            page = page || this.getInt('page');
-//            all = all || false;
-            var comments = this.get('comments').models;
+//            var comments = this.get('comments').models;
+            var comments = this.get('comments');
             var shown = this.getInt('shown');
-//            var offset = Math.max(0, (page-1)*this.getInt('perPage'));
-            var prevView = offset?this.getCommentView(comments[comments.length-offset]):null;
-            for(var i = comments.length-1-offset, j = offset; j < shown && i >= 0; i--, j++){
-                var comment = comments[i];
+            var prevView = offset?this.getCommentView(comments[comments.size()-offset]):null;
+            var tatalComments = comments.size();
+//            for(var i = comments.length-1-offset, j = offset; j < shown && i >= 0; i--, j++){
+//                var comment = comments[i];
+            var totalRendered = 0;
+            comments.each(function(comment, i){
+                if(i < offset || totalRendered >= shown){
+                    return;
+                }
                 var view = this.renderComment(comment);
-                if('asc' === this.get('order')){
+                if('desc' === this.get('order')){
                     if(prevView){
                         prevView.$el.before(view.el);
                     }else{
@@ -64,7 +76,9 @@
                     }
                 }
                 prevView = view;
-            }
+                totalRendered++;
+
+            }, this);
 //            for(var i = comments.length-1-offset, j = offset; j < shown && i >= 0; i--, j++){
 //                var comment = comments[i];
 //                var view = this.renderComment(comment);
@@ -76,7 +90,7 @@
 //            }
             this.get('views.shown').text(_.template('Показано <%= shown %> из <%= count %>', {
                 shown: shown,
-                count: comments.length
+                count: comments.size()
             }));
             this.get('views.total').text(comments.length);
             this.get('showHiddenBox').css('display', shown<comments.length?'block':'none');
@@ -451,7 +465,44 @@
             }
             this.createPlaceholdersFromLabels();
             this.setupFieldsChecks();
+            $(document).on('userChanged', $.proxy(this.onUserChanged, this));
 //            this.buttons('save').unbind('click').click($.proxy(this.buttonSaveClicked, this));
+        },
+        
+        onUserChanged: function(){
+            if(parseInt($.wp.currentUser.id)){
+                this.$el.removeClass('non_authorized').addClass('user_authorized');
+                if(!this.model.id){
+                    this.model.set({
+                        user_id: $.wp.currentUser.id,
+                        comment_author: $.wp.currentUser.getDisplayName()||$.wp.currentUser.getLogin(),
+                        comment_author_email: $.wp.currentUser.getEmail(),
+                        comment_content: this.getFieldValue('comment_content')
+                    });
+//                    this.model.setUserId($.wp.currentUser.id);
+//                    this.model.setAuthor($.wp.currentUser.getDisplayName()||$.wp.currentUser.getLogin());
+//                    this.model.setEmail($.wp.currentUser.getEmail());
+                    var fb_user_id = $.wp.currentUser.get('meta.fb_user_id')
+                    if(fb_user_id){
+                        this.model.set('meta.fb_user_id', fb_user_id);
+                    }
+                }
+                
+            }else{
+                this.$el.removeClass('user_authorized').addClass('non_authorized');
+                if(!this.model.id){
+                    this.model.set({
+                        user_id: $.wp.currentUser.id,
+                        comment_content: this.getFieldValue('comment_content')
+                    });
+                    this.model.setUserId($.wp.currentUser.id);
+                    this.model.set('meta.fb_user_id', null);
+                }
+                if('add'!==this.get('mode')){
+                    this.buttonCancelClicked();
+                }
+            }
+            this.render();
         },
         
         setModel: function(model){
@@ -594,7 +645,7 @@
         },
                 
         buttonCancelClicked: function(event){
-            event.preventDefault();
+            event && event.preventDefault();
             this.$el.hide();
             var event = 'brx.CommentEditor.updateCanceled';
             switch(this.get('mode')){

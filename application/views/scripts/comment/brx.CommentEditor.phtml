@@ -8,7 +8,7 @@
 <form class="brx-comment_editor <?php echo UserModel::currentUser()->getId()?'user_authorized':'non_authorized'?>" data-view="brx.CommentEditor" data-postId="<?php echo $this->post->getId();?>" data-attach-view="commentEditor">
     <input type="hidden" data-attach-point="inputs.post_id" value="<?php echo $this->post->getId();?>" name="comment_post_ID">
     <input type="hidden" data-attach-point="inputs.parent_id" value="0" id="comment_parent" name="comment_parent">
-    <div class="non_authorized_block" data-attach-point="nonAuthorizedBlock" <?php HtmlHelper::hidden(AclHelper::isAuthorized());?>>
+    <div class="non_authorized_block" data-attach-point="nonAuthorizedBlock" <?php //HtmlHelper::hidden(AclHelper::isAuthorized());?>>
         <div data-attach-point="fields.comment_author" class="form_field field_name" check-required="Необходимо заполнить">
             <label>Ваше имя</label>
             <div class="form_field-input_box">
@@ -31,7 +31,7 @@
             <div class="form_field-tips"></div>
         </div>
     </div>
-    <div class="user_authorized_block" data-attach-point="userAuthorizedBlock" <?php HtmlHelper::hidden(!AclHelper::isAuthorized());?>>
+    <div class="user_authorized_block" data-attach-point="userAuthorizedBlock" <?php // HtmlHelper::hidden(!AclHelper::isAuthorized());?>>
         <?php echo get_avatar(UserModel::currentUser()->getEmail(), 96);?>
     </div>
     <div data-attach-point="fields.comment_content" class="form_field field_comment" check-required="Необходимо заполнить" >
