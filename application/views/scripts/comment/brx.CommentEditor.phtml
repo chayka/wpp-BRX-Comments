@@ -8,7 +8,7 @@
 <form class="brx-comment_editor <?php echo UserModel::currentUser()->getId()?'user_authorized':'non_authorized'?>" data-view="brx.CommentEditor" data-postId="<?php echo $this->post->getId();?>" data-attach-view="commentEditor">
     <input type="hidden" data-attach-point="inputs.post_id" value="<?php echo $this->post->getId();?>" name="comment_post_ID">
     <input type="hidden" data-attach-point="inputs.parent_id" value="0" id="comment_parent" name="comment_parent">
-    <div class="auth_invitation">Если <?php if(class_exists('brx_Facebook')):?><a href="#facebook-login"><img class="login-fb" src="<?php brx_Facebook::baseUrl();?>res/img/logo32x32.png" /></a><?php endif;?> <a href="#login">войти</a>, то оставлять комментарии будет проще</div>
+    <div class="auth_invitation">Если <?php if(class_exists('brx_Facebook')):?><a href="#facebook-login"><img class="login-fb" src="<?php brx_Facebook::baseUrl();?>res/img/logo32x32.png" /></a><?php endif;?> <a href="#login">войти</a>, то оставлять комментарии будет проще!</div>
     <div class="non_authorized_block" data-attach-point="nonAuthorizedBlock" <?php //HtmlHelper::hidden(AclHelper::isAuthorized());?>>
         <div data-attach-point="fields.comment_author" class="form_field field_name" check-required="Необходимо заполнить">
             <label>Ваше имя</label>
