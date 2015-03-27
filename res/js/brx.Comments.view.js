@@ -16,7 +16,7 @@
             this.listenTo(this.get('comments'), 'add', $.proxy(this.onCommentPosted, this));
             this.listenTo(this.get('comments'), 'remove', $.proxy(this.removeCommentView, this));
             this.listenTo(this.get('comments'), 'reset', $.proxy(this.renderComments, this));
-            this.listenTo(this.get('comments'), 'change', $.proxy(this.renderComments, this));
+            this.listenTo(this.get('comments'), 'change', $.proxy(this.renderComment, this));
 //            this.listenTo(this.get('comments'), 'all', $.proxy(this.render, this));
             this.listenTo(Backbone.Events, 'brx.Comments.editComment', $.proxy(this.editComment, this));
             this.listenTo(Backbone.Events, 'brx.Comments.replyToComment', $.proxy(this.replyToComment, this));
