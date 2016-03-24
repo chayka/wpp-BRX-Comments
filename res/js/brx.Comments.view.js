@@ -56,7 +56,7 @@
             if(offset > totalComments){
                 return;
             }
-            var prevView = offset?this.getCommentView(comments[totalComments-offset]):null;
+            var prevView = offset?this.getCommentView(comments.at(totalComments-offset)):null;
 //            for(var i = comments.length-1-offset, j = offset; j < shown && i >= 0; i--, j++){
 //                var comment = comments[i];
             var totalRendered = 0;
