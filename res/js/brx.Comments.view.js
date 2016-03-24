@@ -51,13 +51,18 @@
 //            var comments = this.get('comments').models;
             var comments = this.get('comments');
             var shown = this.getInt('shown');
-            var prevView = offset?this.getCommentView(comments[comments.size()-offset]):null;
-            var tatalComments = comments.size();
+            var perPage = this.getInt('perPage');
+            var totalComments = comments.size();
+            if(offset > totalComments){
+                return;
+            }
+            var prevView = offset?this.getCommentView(comments[totalComments-offset]):null;
 //            for(var i = comments.length-1-offset, j = offset; j < shown && i >= 0; i--, j++){
 //                var comment = comments[i];
             var totalRendered = 0;
+            
             comments.each(function(comment, i){
-                if(i < offset || totalRendered >= shown){
+                if(i < totalComments - perPage - offset || totalRendered >= shown){
                     return;
                 }
                 var view = this.renderComment(comment);
